@@ -13,6 +13,10 @@ import AuthProvider
 ///for a given authenticatable and role entity.
 open class RolesAccessor<TRole, TAuth>: RolesAccessorProtocol where TRole: RoleIdentifier, TAuth: Entity, TAuth: Authenticatable {
     
+    public init() {
+        
+    }
+    
     ///Returns true if the given entity has the given role.
     ///Throws an exception on Fluent errors.
     open func entity(entity:TAuth, has role:TRole) throws -> Bool {
