@@ -56,6 +56,15 @@
         }
       },
       {
+        "package": "CoronaErrors",
+        "repositoryURL": "https://github.com/CooperCorona/CoronaErrors.git",
+        "state": {
+          "branch": null,
+          "revision": "32db89e9b11f3a1e85b2548296f63ceb5137a40e",
+          "version": "1.0.3"
+        }
+      },
+      {
         "package": "Crypto",
         "repositoryURL": "https://github.com/vapor/crypto.git",
         "state": {

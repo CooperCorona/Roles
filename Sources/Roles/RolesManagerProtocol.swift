@@ -22,6 +22,8 @@ public protocol RolesManagerProtocol {
     ///Throws an exception on Fluent errors.
     func entity(entity:TAuth, has role:TRole) throws -> Bool
     
+    func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> Bool
+    
     ///Associates a given role with an entity. Throws an exception
     ///if the role is already associated with the entity or on Fluent errors.
     func add(role:TRole, to entity:TAuth) throws -> Role<TRole, TAuth>
