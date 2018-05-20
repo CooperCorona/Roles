@@ -93,6 +93,8 @@ final class AuthenticatableRolesTests: XCTestCase {
         XCTAssert(try !self.auth.has(role: RoleMock.admin))
     }
     
+    ///Test that has(roles:) correctly returns true with a role group with
+    ///one included role and zero excluded roles.
     func testHasRolesOneIncludedNoneExcludedTrue() {
         let role = Role<RoleMock, AuthMock>(role: .admin, ownerId: self.auth.id)
         try! role.save()
@@ -109,6 +111,8 @@ final class AuthenticatableRolesTests: XCTestCase {
         
     }
     
+    ///Test that has(roles:) correctly returns false with a role group with
+    ///one included role and zero excluded roles.
     func testHasRolesOneIncludedNoneExcludedFalse() {
         let role = Role<RoleMock, AuthMock>(role: .admin, ownerId: self.auth.id)
         try! role.save()
@@ -119,6 +123,9 @@ final class AuthenticatableRolesTests: XCTestCase {
         XCTAssertFalse(try self.auth.has(roles: rolesGroup))
     }
 
+    ///Test that has(roles:) correctly returns false with a role group with
+    ///zero included roles and one excluded role, where the role in the database
+    ///does not match the excluded role.
     func testHasRolesNoneIncludedOneExcludedMismatchFalse() {
         let role = Role<RoleMock, AuthMock>(role: .admin, ownerId: self.auth.id)
         try! role.save()
@@ -129,6 +136,9 @@ final class AuthenticatableRolesTests: XCTestCase {
         XCTAssertFalse(try self.auth.has(roles: rolesGroup))
     }
 
+    ///Test that has(roles:) correctly returns false with a role group with
+    ///zero included roles and one excluded role, where the role in the database
+    ///matches the excluded role.
     func testHasRolesNoneIncludedOneExcludedMatchFalse() {
         let role = Role<RoleMock, AuthMock>(role: .admin, ownerId: self.auth.id)
         try! role.save()
@@ -139,6 +149,9 @@ final class AuthenticatableRolesTests: XCTestCase {
         XCTAssertFalse(try self.auth.has(roles: rolesGroup))
     }
     
+    ///Test that has(roles:) correctly returns true with a role group with
+    ///one included role and one excluded role, where the role in the database
+    ///matches the included role.
     func testHasRolesOneIncludedOneExcludedTrue() {
         let role = Role<RoleMock, AuthMock>(role: .confirmed, ownerId: self.auth.id)
         try! role.save()
@@ -150,6 +163,9 @@ final class AuthenticatableRolesTests: XCTestCase {
         XCTAssert(try self.auth.has(roles: rolesGroup))
     }
     
+    ///Test that has(roles:) correctly returns false with a role group with
+    ///one included role and one excluded role, where the role in the database
+    ///matches the excluded role.
     func testHasRolesOneIncludedOneExcludedFalse() {
         let role = Role<RoleMock, AuthMock>(role: .unconfirmed, ownerId: self.auth.id)
         try! role.save()
@@ -161,7 +177,9 @@ final class AuthenticatableRolesTests: XCTestCase {
         XCTAssertFalse(try self.auth.has(roles: rolesGroup))
     }
     
-    
+    ///Test that has(roles:) correctly returns false with a role group with
+    ///one included role and one excluded role, where there are roles in the
+    ///database to match both the included and excluded role.
     func testHasRolesOneIncludedOneExcludedBoth() {
         let role = Role<RoleMock, AuthMock>(role: .confirmed, ownerId: self.auth.id)
         try! role.save()
