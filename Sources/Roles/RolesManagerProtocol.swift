@@ -22,6 +22,9 @@ public protocol RolesManagerProtocol {
     ///Throws an exception on Fluent errors.
     func entity(entity:TAuth, has role:TRole) throws -> Bool
     
+    ///Returns true if the entity is associated with *at least 1* role in
+    ///roles.includedRoles and is **not** associated with *any* role in
+    ///roles.excludedRoles. Throws an exception on Fluent errors.
     func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> Bool
     
     ///Associates a given role with an entity. Throws an exception

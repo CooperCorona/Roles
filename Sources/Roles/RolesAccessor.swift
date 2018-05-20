@@ -23,6 +23,13 @@ open class RolesAccessor<TRole, TAuth>: RolesAccessorProtocol where TRole: RoleI
         return try entity.has(role: role)
     }
     
+    ///Returns true if the entity is associated with *at least 1* role in
+    ///roles.includedRoles and is **not** associated with *any* role in
+    ///roles.excludedRoles. Throws an exception on Fluent errors.
+    public func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> Bool {
+        return try entity.has(roles: roles)
+    }
+    
     ///Associates a given role with an entity. Throws an exception
     ///if the role is already associated with the entity or on Fluent errors.
     public func add(role: TRole, to entity: TAuth) throws -> Role<TRole, TAuth> {

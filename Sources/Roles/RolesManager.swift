@@ -29,30 +29,23 @@ open class RolesManager<TAccessor>: RolesManagerProtocol where TAccessor: RolesA
         return try self.accessor.entity(entity: entity, has: role)
     }
 
+    ///Returns true if the entity is associated with *at least 1* role in
+    ///roles.includedRoles and is **not** associated with *any* role in
+    ///roles.excludedRoles. Throws an exception on Fluent errors.
     open func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> Bool {
-        for includedRole in roles.includedRoles {
-            guard try self.entity(entity: entity, has: includedRole) else {
-                return false
-            }
-        }
-        for excludedRole in roles.excludedRoles {
-            guard try !self.entity(entity: entity, has: excludedRole) else {
-                return false
-            }
-        }
-        return true
+        return false
     }
 
     ///Associates a given role with an entity. Throws an exception
     ///if the role is already associated with the entity or on Fluent errors.
     open func add(role: TRole, to entity: TAuth) throws -> Role<TRole, TAuth> {
-        return try self.add(role: role, to: entity)
+        return try self.accessor.add(role: role, to: entity)
     }
 
     ///Disassociates a given role from an entity. Throws an exception
     ///if the role is not already associated with the entity or on Fluent errors.
     open func remove(role: TRole, from entity: TAuth) throws {
-        try self.remove(role: role, from: entity)
+        try self.accessor.remove(role: role, from: entity)
     }
 
 }
