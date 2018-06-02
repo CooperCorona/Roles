@@ -33,7 +33,7 @@ open class RolesManager<TAccessor>: RolesManagerProtocol where TAccessor: RolesA
     ///roles.includedRoles and is **not** associated with *any* role in
     ///roles.excludedRoles. Throws an exception on Fluent errors.
     open func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> Bool {
-        return false
+        return try self.accessor.entity(entity: entity, has: roles)
     }
 
     ///Associates a given role with an entity. Throws an exception
