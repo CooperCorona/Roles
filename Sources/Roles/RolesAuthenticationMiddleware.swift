@@ -39,7 +39,7 @@ open class RolesAuthenticationMiddleware<TRolesManager>: Middleware where TRoles
         self.roles = roles
     }
     
-    public func respond(to request: Request, chainingTo next: Responder) throws -> Response {
+    open func respond(to request: Request, chainingTo next: Responder) throws -> Response {
         let auth = try request.auth.assertAuthenticated(TAuth.self)
         guard try self.rolesManager.entity(entity: auth, has: self.roles) else {
             return Response(status: .unauthorized)
