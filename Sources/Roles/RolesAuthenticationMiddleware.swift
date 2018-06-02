@@ -29,9 +29,9 @@ open class RolesAuthenticationMiddleware<TRolesManager>: Middleware where TRoles
     }
     
     ///Accesses roles information for authenticatable entities.
-    private let rolesManager:TRolesManager
+    public let rolesManager:TRolesManager
     ///The roles that should and should not be allowed to access this resource.
-    private let roles:RolesGroup<TRole>
+    public let roles:RolesGroup<TRole>
     
     ///Initializes a RolesAuthenticationMiddleware object with a given roles manager and roles group.
     public init(rolesManager:TRolesManager, roles:RolesGroup<TRole>) {
@@ -42,7 +42,7 @@ open class RolesAuthenticationMiddleware<TRolesManager>: Middleware where TRoles
     open func respond(to request: Request, chainingTo next: Responder) throws -> Response {
         let auth = try request.auth.assertAuthenticated(TAuth.self)
         guard try self.rolesManager.entity(entity: auth, has: self.roles) else {
-            return Response(status: .unauthorized)
+            throw RolesError()
         }
         return try next.respond(to: request)
     }
