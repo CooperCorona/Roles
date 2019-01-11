@@ -45,33 +45,38 @@ extension Authenticatable where Self: Entity {
         }
     }
     
-    ///Adds a role to this entity. Throws an exception if the role is already
-    ///associated with this entity or on a Fluent error.
+    ///Adds a role to this entity. Throws an OperationException if the role is already
+    ///associated with this entity. Throws a NilException<Identifier>
+    ///if the `id` property is `nil`. Throws an exception on a Fluent error.
     public func add<TRole>(role:TRole) throws -> Role<TRole, Self> where TRole: RoleIdentifier {
+        guard let id = self.id else {
+            throw NilException<Identifier>()
+        }
         guard try !self.has(role: role) else {
-            throw CoronaError.alreadyExists
+            throw OperationException(error: .alreadyExists, message: "User with id \(id) already has role \(role).")
         }
         let role = Role<TRole, Self>(role: role, ownerId: self.id!)
         try role.save()
         return role
     }
     
-    ///Removes a role from this entity. Throws an exception if this entity
-    ///does not posess the given role or on a Fluent error.
+    ///Removes a role from this entity. Throws an OperationException if this entity
+    ///does not posess the given role. Throws a NilException<Identifier>
+    ///if the `id` property is `nil`. Throws an exception on a Fluent error.
     public func remove<TRole>(role:TRole) throws where TRole: RoleIdentifier {
-        guard try self.has(role: role) else {
-            throw CoronaError.missing
-        }
         guard let id = self.id else {
-            throw CoronaError.invalidState
+            throw NilException<Identifier>()
         }
-        guard let role = try Role<TRole, Self>.makeQuery().filter(Self.foreignIdKey, id).filter("role", role.toString()).first() else {
+        guard try self.has(role: role) else {
+            throw OperationException(error: .missing, message: "User with id \(id) does not have role \(role).")
+        }
+        guard let roleToDelete = try Role<TRole, Self>.makeQuery().filter(Self.foreignIdKey, id).filter("role", role.toString()).first() else {
             //If the result of the query is nil, one could throw CoronaError.nil, but
             //strictly speaking the underlying reason is that the role is missing from
             //the database, so CoronaError.missing is more appropriate here.
-            throw CoronaError.missing
+            throw OperationException(error: .missing, message: "User with id \(id) does not have role \(role).")
         }
-        try role.delete()
+        try roleToDelete.delete()
     }
     
 }
