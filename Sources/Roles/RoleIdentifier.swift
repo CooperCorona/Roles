@@ -7,14 +7,14 @@
 
 import Foundation
 import Vapor
-import AuthProvider
+import Authentication
 import Fluent
 
 ///Adds type safety to roles. Roles must ultimately be represented
 ///as strings (or ints), but that loses Swift's type safety. Types
 ///can conform to RoleIdentifier to be stored in the database as
 ///strings be manipulated everywhere else as an actual type.
-public protocol RoleIdentifier: Hashable {
+public protocol RoleIdentifier: Hashable, Codable {
     
     associatedtype AllCases: Collection where AllCases.Element == Self
     ///Returns an collection of all potential roles that an authenticatable entity can have.

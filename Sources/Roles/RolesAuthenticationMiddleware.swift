@@ -21,10 +21,10 @@ open class RolesAuthenticationMiddleware<TRolesManager>: Middleware where TRoles
     ///An error thrown when an entity is authenticated, but does not
     ///have the proper roles to access a certain resource.
     public struct RolesError: AbortError {
-        
+        public var identifier: String { return "RolesError" }
         public var reason: String { return "Unauthorized" }
-        public var status: Status { return .unauthorized }
-        public var metadata: Node? { return nil }
+        public var status: HTTPResponseStatus { return .unauthorized }
+        public var headers: HTTPHeaders { return HTTPHeaders() }
         
     }
     
@@ -38,13 +38,15 @@ open class RolesAuthenticationMiddleware<TRolesManager>: Middleware where TRoles
         self.rolesManager = rolesManager
         self.roles = roles
     }
-    
-    open func respond(to request: Request, chainingTo next: Responder) throws -> Response {
-        let auth = try request.auth.assertAuthenticated(TAuth.self)
-        guard try self.rolesManager.entity(entity: auth, has: self.roles) else {
-            throw RolesError()
+
+    open func respond(to request: Request, chainingTo next: Responder) throws -> EventLoopFuture<Response> {
+        let auth = try request.requireAuthenticated(TAuth.self)
+        return try self.rolesManager.entity(entity: auth, has: self.roles).flatMap() {
+            guard $0 else {
+                throw RolesError()
+            }
+            return try next.respond(to: request)
         }
-        return try next.respond(to: request)
     }
     
 }

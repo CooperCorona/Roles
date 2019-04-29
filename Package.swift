@@ -11,20 +11,25 @@ let package = Package(
             targets: ["Roles"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/vapor/auth-provider.git", .upToNextMajor(from: "1.0.0")),
-        .package(url: "https://github.com/vapor/fluent-provider.git", .upToNextMajor(from: "1.0.0")),
-        .package(url: "https://github.com/CooperCorona/CoronaErrors.git", from: "2.0.0")
+//        .package(url: "https://github.com/vapor/auth-provider.git", .upToNextMajor(from: "1.0.0")),
+      .package(url: "https://github.com/vapor/auth.git", from: "2.0.0"),
+      .package(url: "https://github.com/vapor/fluent.git", .upToNextMajor(from: "3.0.0")),
+      .package(url: "https://github.com/vapor/fluent-sqlite.git", .upToNextMajor(from: "3.0.0")),
+      .package(url: "https://github.com/CooperCorona/CoronaErrors.git", from: "2.0.0")
     ],
     targets: [
         .target(
             name: "Roles",
             dependencies: [
-                "AuthProvider",
-                "FluentProvider",
+                "Authentication",
+                "Fluent",
                 "CoronaErrors"
             ]),
         .testTarget(
             name: "RolesTests",
-            dependencies: ["Roles"]),
+            dependencies: [
+                "Roles",
+                "FluentSQLite"
+            ]),
     ]
 )

@@ -8,15 +8,20 @@
 import Foundation
 import Roles
 import CoronaErrors
+import Vapor
 
 ///Mocks a RoleIdentifier.
-enum RoleMock: String, RoleIdentifier {
+public enum RoleMock: String, RoleIdentifier, ReflectionDecodable {
+    public static func reflectDecoded() throws -> (RoleMock, RoleMock) {
+        return (.unconfirmed, .confirmed)
+    }
+
     
     case unconfirmed
     case confirmed
     case admin
     
-    init(string:String) throws {
+    public init(string:String) throws {
         switch string {
         case "unconfirmed":
             self = .unconfirmed
@@ -25,15 +30,15 @@ enum RoleMock: String, RoleIdentifier {
         case "admin":
             self = .admin
         default:
-            throw CoronaError.invalidArgument
+            throw ValueError.invalidArgument
         }
     }
     
-    func toString() -> String {
+    public func toString() -> String {
         return self.rawValue
     }
     
-    static var allCases:[RoleMock] {
+    public static var allCases:[RoleMock] {
         return [.unconfirmed, .confirmed, .admin]
     }
     

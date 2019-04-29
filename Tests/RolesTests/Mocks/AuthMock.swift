@@ -8,37 +8,23 @@
 import Foundation
 import Vapor
 import Fluent
-import AuthProvider
+import Authentication
+import FluentSQLite
 
 ///Mocks an authenticatable entity.
-class AuthMock: Entity, Authenticatable {
-    
-    let storage: Storage = Storage()
-    
+public final class AuthMock<TDatabase>: Model, Authenticatable where TDatabase: QuerySupporting {
+
+    public typealias ID = Int
+    public typealias Database = SQLiteDatabase
+
+    public static var idKey: WritableKeyPath<AuthMock, Int?> { return \.id }
+
+    var id:Int? = nil
+    var username = "Auth"
+
     init() {
         
     }
-    
-    required init(row:Row) throws {
-        
-    }
-    
-    func makeRow() throws -> Row {
-        return Row()
-    }
-    
 }
 
-extension AuthMock: Preparation {
-    
-    static func prepare(_ database: Database) throws {
-        try database.create(self) { builder in
-            builder.id()
-        }
-    }
-    
-    static func revert(_ database: Database) throws {
-        try database.delete(self)
-    }
-    
-}
+extension AuthMock: SQLiteMigration {}

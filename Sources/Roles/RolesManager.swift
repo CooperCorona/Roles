@@ -7,7 +7,7 @@
 
 import Foundation
 import Fluent
-import AuthProvider
+import Authentication
 
 ///Manages authenticatable entities and associated roles.
 open class RolesManager<TAccessor>: RolesManagerProtocol where TAccessor: RolesAccessorProtocol {
@@ -25,27 +25,27 @@ open class RolesManager<TAccessor>: RolesManagerProtocol where TAccessor: RolesA
 
     ///Returns true if the given entity has the given role.
     ///Throws an exception on Fluent errors.
-    open func entity(entity: TAuth, has role: TRole) throws -> Bool {
+    open func entity(entity: TAuth, has role: TRole) throws -> EventLoopFuture<Bool> {
         return try self.accessor.entity(entity: entity, has: role)
     }
 
     ///Returns true if the entity is associated with *at least 1* role in
     ///roles.includedRoles and is **not** associated with *any* role in
     ///roles.excludedRoles. Throws an exception on Fluent errors.
-    open func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> Bool {
+    open func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> EventLoopFuture<Bool> {
         return try self.accessor.entity(entity: entity, has: roles)
     }
 
     ///Associates a given role with an entity. Throws an exception
     ///if the role is already associated with the entity or on Fluent errors.
-    open func add(role: TRole, to entity: TAuth) throws -> Role<TRole, TAuth> {
+    open func add(role: TRole, to entity: TAuth) throws -> EventLoopFuture<Role<TRole, TAuth>> {
         return try self.accessor.add(role: role, to: entity)
     }
 
     ///Disassociates a given role from an entity. Throws an exception
     ///if the role is not already associated with the entity or on Fluent errors.
-    open func remove(role: TRole, from entity: TAuth) throws {
-        try self.accessor.remove(role: role, from: entity)
+    open func remove(role: TRole, from entity: TAuth) throws -> EventLoopFuture<Void>{
+        return try self.accessor.remove(role: role, from: entity)
     }
 
 }

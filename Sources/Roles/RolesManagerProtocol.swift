@@ -7,7 +7,7 @@
 
 import Foundation
 import Fluent
-import AuthProvider
+import Authentication
 
 ///Accesses role and manages roles info
 ///for a given authenticatable and role entity.
@@ -16,23 +16,23 @@ public protocol RolesManagerProtocol {
     ///The type used to identify roles in the data store.
     associatedtype TRole: RoleIdentifier
     ///The authenticatable entity containing the roles.
-    associatedtype TAuth: Entity, Authenticatable
+    associatedtype TAuth: Model, Authenticatable
     
     ///Returns true if the given entity has the given role.
     ///Throws an exception on Fluent errors.
-    func entity(entity:TAuth, has role:TRole) throws -> Bool
+    func entity(entity:TAuth, has role:TRole) throws -> EventLoopFuture<Bool>
     
     ///Returns true if the entity is associated with *at least 1* role in
     ///roles.includedRoles and is **not** associated with *any* role in
     ///roles.excludedRoles. Throws an exception on Fluent errors.
-    func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> Bool
+    func entity(entity: TAuth, has roles: RolesGroup<TRole>) throws -> EventLoopFuture<Bool>
     
     ///Associates a given role with an entity. Throws an exception
     ///if the role is already associated with the entity or on Fluent errors.
-    func add(role:TRole, to entity:TAuth) throws -> Role<TRole, TAuth>
+    func add(role:TRole, to entity:TAuth) throws -> EventLoopFuture<Role<TRole, TAuth>>
     
     ///Unassociates a given role from an entity. Throws an exception
     ///if the role is not already associated with the entity or on Fluent errors.
-    func remove(role:TRole, from entity:TAuth) throws
+    func remove(role:TRole, from entity:TAuth) throws -> EventLoopFuture<Void>
     
 }
