@@ -14,7 +14,12 @@ import Fluent
 ///as strings (or ints), but that loses Swift's type safety. Types
 ///can conform to RoleIdentifier to be stored in the database as
 ///strings be manipulated everywhere else as an actual type.
-public protocol RoleIdentifier: Hashable, Codable {
+///
+///Fluent throws an exception when trying to build queries from expressions
+///involving RoleIdentifier types. Implementing ReflectionDecodable (which
+///is implemented automatically via default implementations of the methods
+///solves this).
+public protocol RoleIdentifier: Hashable, Codable, ReflectionDecodable {
     
     associatedtype AllCases: Collection where AllCases.Element == Self
     ///Returns an collection of all potential roles that an authenticatable entity can have.
