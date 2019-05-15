@@ -15,10 +15,10 @@ open class RolesAccessor<TRole, TAuth>: RolesAccessorProtocol where
     TRole: RoleIdentifier,
     TAuth: Model & Authenticatable {
 
-    private let connectionPool:DatabaseConnectionPool<TAuth.Database>
+    private let connectionPool:DatabaseConnectionPool<ConfiguredDatabase<TAuth.Database>>
 
-    public init(connection:DatabaseConnectionPool<TAuth.Database>) {
-        self.connectionPool = connection
+    public init(connectionPool:DatabaseConnectionPool<ConfiguredDatabase<TAuth.Database>>) {
+        self.connectionPool = connectionPool
     }
     
     ///Returns true if the given entity has the given role.
