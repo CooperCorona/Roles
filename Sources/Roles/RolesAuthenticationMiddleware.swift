@@ -31,7 +31,7 @@ open class RolesAuthenticationMiddleware<TRole, TAuth>: Middleware where TRole: 
 
     public func respond(to request: Request, chainingTo next: Responder) throws -> EventLoopFuture<Response> {
         let auth:TAuth = try request.requireAuthenticated(TAuth.self)
-        return try self.entity(entity: auth, has: self.roles).flatMap() {
+        return try self.entity(entity: auth, has: self.roles, req: request).flatMap() {
             guard $0 else {
                 throw Abort(.unauthorized)
             }
@@ -39,7 +39,7 @@ open class RolesAuthenticationMiddleware<TRole, TAuth>: Middleware where TRole: 
         }
     }
 
-    open func entity(entity:TAuth, has:RolesGroup<TRole>) throws -> EventLoopFuture<Bool> {
+    open func entity(entity:TAuth, has roles:RolesGroup<TRole>, req:Request) throws -> EventLoopFuture<Bool> {
         fatalError("Not implemented. Subclasses of RolesAuthenticationMiddleware must implement entity(entity:has:).")
     }
     
