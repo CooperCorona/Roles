@@ -11,11 +11,10 @@ let package = Package(
             targets: ["Roles"]),
     ],
     dependencies: [
-//        .package(url: "https://github.com/vapor/auth-provider.git", .upToNextMajor(from: "1.0.0")),
       .package(url: "https://github.com/vapor/auth.git", from: "2.0.0"),
       .package(url: "https://github.com/vapor/fluent.git", .upToNextMajor(from: "3.0.0")),
       .package(url: "https://github.com/vapor/fluent-sqlite.git", .upToNextMajor(from: "3.0.0")),
-      .package(url: "https://github.com/CooperCorona/CoronaErrors.git", .branch("Swift5"))
+      .package(url: "https://github.com/CooperCorona/CoronaErrors.git", .upToNextMajor(from: "2.0.0")),
     ],
     targets: [
         .target(
