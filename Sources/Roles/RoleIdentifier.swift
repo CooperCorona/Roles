@@ -7,7 +7,6 @@
 
 import Foundation
 import Vapor
-import Authentication
 import Fluent
 
 ///Adds type safety to roles. Roles must ultimately be represented
@@ -19,16 +18,7 @@ import Fluent
 ///involving RoleIdentifier types. Implementing ReflectionDecodable (which
 ///is implemented automatically via default implementations of the methods
 ///solves this).
-public protocol RoleIdentifier: Hashable, Codable, ReflectionDecodable {
-    
-    associatedtype AllCases: Collection where AllCases.Element == Self
-    ///Returns an collection of all potential roles that an authenticatable entity can have.
-    ///
-    ///**NOTE**: This is implemented automatically by the compiler in Swift 4.2 for
-    ///any type conforming to the CaseIterable protocol. When updating this project
-    ///to Swift 4.2, this will be removed, and RoleIdentifier will require conformance
-    ///to CaseIterable.
-    static var allCases: AllCases { get }
+public protocol RoleIdentifier: Hashable, Codable, CaseIterable, QueryableProperty {
     
     ///Initializes an instance of this class from a string. If
     ///the given string does not correspond to a value of this

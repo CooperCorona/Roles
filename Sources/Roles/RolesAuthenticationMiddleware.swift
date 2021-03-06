@@ -7,8 +7,7 @@
 
 import Foundation
 import Vapor
-import Authentication
-import HTTP
+import Fluent
 
 ///Middleware that authorizes authenticatable entities of a certain role(s).
 ///If the entity's roles do not match the given roles group, then a 404 error
@@ -29,13 +28,17 @@ open class RolesAuthenticationMiddleware<TRole, TAuth>: Middleware where TRole: 
         self.roles = roles
     }
 
-    public func respond(to request: Request, chainingTo next: Responder) throws -> EventLoopFuture<Response> {
-        let auth:TAuth = try request.requireAuthenticated(TAuth.self)
-        return try self.entity(entity: auth, has: self.roles, req: request).flatMap() {
-            guard $0 else {
-                throw Abort(.unauthorized)
+    public func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
+        do {
+            let auth:TAuth = try request.auth.require(TAuth.self)
+            return try self.entity(entity: auth, has: self.roles, req: request).flatMap() {
+                guard $0 else {
+                    return request.eventLoop.future(error: Abort(.unauthorized))
+                }
+                return next.respond(to: request)
             }
-            return try next.respond(to: request)
+        } catch {
+            return request.eventLoop.makeFailedFuture(error)
         }
     }
 
