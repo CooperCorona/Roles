@@ -34,7 +34,7 @@ extension Authenticatable where Self: Model {
         }
         return self.rolesQuery(on: conn, id: id).filter(\.$role == role).count().map { $0 > 0 }
     }
-    
+
     ///Returns true if the entity is associated with *at least 1* role in
     ///roles.includedRoles and is **not** associated with *any* role in
     ///roles.excludedRoles. Throws an exception on Fluent errors.
@@ -67,7 +67,7 @@ extension Authenticatable where Self: Model {
                 }
         }
     }
-    
+
     ///Adds a role to this entity. Throws an OperationException if the role is already
     ///associated with this entity. Throws a NilException<Identifier>
     ///if the `id` property is `nil`. Throws an exception on a Fluent error.
@@ -83,7 +83,7 @@ extension Authenticatable where Self: Model {
             return role.create(on: conn).map { role }
         }
     }
-    
+
     ///Removes a role from this entity. Throws an OperationException if this entity
     ///does not posess the given role. Throws a NilException<Identifier>
     ///if the `id` property is `nil`. Throws an exception on a Fluent error.
@@ -91,20 +91,19 @@ extension Authenticatable where Self: Model {
         guard let id = self.id else {
             return conn.eventLoop.makeFailedFuture(NilException<IDValue>())
         }
-        let query:QueryBuilder<Role<TRole, Self>> = self.rolesQuery(on: conn, id: id)
-        return self.has(role: role, on: conn).flatMap() {
-            guard $0 else {
+        return self.has(role: role, on: conn).flatMap() { hasRole -> EventLoopFuture<Role<TRole, Self>?> in
+            guard hasRole else {
                 return conn.eventLoop.makeFailedFuture(OperationException(error: .missing, message: "User with id \(id) does not have role \(role)."))
             }
-            return query.first().flatMap() {
-                guard let roleToDelete = $0 else {
-                    //If the result of the query is nil, one could throw CoronaError.nil, but
-                    //strictly speaking the underlying reason is that the role is missing from
-                    //the database, so CoronaError.missing is more appropriate here.
-                    return conn.eventLoop.makeFailedFuture(OperationException(error: .missing, message: "User with id \(id) does not have role \(role)."))
-                }
-                return roleToDelete.delete(on: conn)
+            return self.rolesQuery(on: conn, id: id).filter(\.$role == role).first()
+        }.flatMap {
+            guard let roleToDelete = $0 else {
+                //If the result of the query is nil, one could throw CoronaError.nil, but
+                //strictly speaking the underlying reason is that the role is missing from
+                //the database, so CoronaError.missing is more appropriate here.
+                return conn.eventLoop.makeFailedFuture(OperationException(error: .missing, message: "User with id \(id) does not have role \(role)."))
             }
+            return roleToDelete.delete(on: conn)
         }
     }
 
