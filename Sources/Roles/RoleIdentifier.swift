@@ -18,7 +18,7 @@ import Fluent
 ///involving RoleIdentifier types. Implementing ReflectionDecodable (which
 ///is implemented automatically via default implementations of the methods
 ///solves this).
-public protocol RoleIdentifier: Hashable, Codable, CaseIterable, QueryableProperty {
+public protocol RoleIdentifier: Hashable, Codable, CaseIterable {
     
     ///Initializes an instance of this class from a string. If
     ///the given string does not correspond to a value of this
