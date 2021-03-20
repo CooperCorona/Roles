@@ -14,7 +14,6 @@ public final class Role<TRole, TAuth>: Model where
     TRole: RoleIdentifier {
 
     public static var schema: String { return "Role_\(TRole.self)_\(TAuth.self)" }
-    public static var idKey: WritableKeyPath<Role<TRole, TAuth>, IDValue?> { return \.id }
 
     public typealias IDValue = TAuth.IDValue
 
@@ -26,13 +25,13 @@ public final class Role<TRole, TAuth>: Model where
     public var role:TRole?
 
     ///The authenticatable entity owning this role.
-    @Field(key: "ownerId")
-    public var ownerId:TAuth.IDValue?
+    @Parent(key: "ownerId")
+    public var owner:TAuth
     
     ///Initializes a role object from a given role identifier and owner identifier.
     public init(role:TRole, ownerId:TAuth.IDValue) {
         self.role = role
-        self.ownerId = ownerId
+        self.$owner.id = ownerId
     }
 
     public init() {}

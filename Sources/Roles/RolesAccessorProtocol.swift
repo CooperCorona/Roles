@@ -16,7 +16,7 @@ public protocol RolesAccessorProtocol {
     ///The type used to identify roles in the data store.
     associatedtype TRole: RoleIdentifier
     ///The authenticatable entity containing the roles.
-    associatedtype TAuth: Model, Authenticatable
+    associatedtype TAuth: Model, Authenticatable where TAuth.IDValue: QueryableProperty
     
     ///Returns true if the given entity has the given role.
     ///Throws an exception on Fluent errors.

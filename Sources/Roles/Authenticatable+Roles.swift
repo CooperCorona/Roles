@@ -10,29 +10,38 @@ import Fluent
 import Vapor
 import CoronaErrors
 
-extension Authenticatable where Self: Model {
+extension Authenticatable where Self: Model, IDValue: QueryableProperty {
 
     /// Returns a query for only the roles associated with this object.
-    private func rolesQuery<TRole>(on conn:Database) -> QueryBuilder<Role<TRole, Self>> where TRole: RoleIdentifier {
-        return Role<TRole, Self>.query(on: conn).filter(\.$ownerId == self.id)
+    private func rolesQuery<TRole>(on conn:Database, id:IDValue) -> QueryBuilder<Role<TRole, Self>> where TRole: RoleIdentifier {
+        return Role<TRole, Self>.query(on: conn).filter(\.$owner.$id == id)
     }
 
     ///Gets all roles associated with this entity.
     public func getRoles<TRole>(on conn:Database) -> EventLoopFuture<[Role<TRole, Self>]> where TRole: RoleIdentifier {
-        return rolesQuery(on: conn).all()
+        guard let id = self.id else {
+            return conn.eventLoop.makeFailedFuture(NilException<IDValue>())
+        }
+        return self.rolesQuery(on: conn, id: id).all()
     }
 
     ///Returns true if a role associated with this entity
     ///in the database has the given identifier, false otherwise.
     ///Throws an exception on Fluent errors.
     public func has<TRole>(role:TRole, on conn:Database) -> EventLoopFuture<Bool> where TRole: RoleIdentifier {
-        return self.rolesQuery(on: conn).filter(\.$role == role).count().map { $0 > 0 }
+        guard let id = self.id else {
+            return conn.eventLoop.makeFailedFuture(NilException<IDValue>())
+        }
+        return self.rolesQuery(on: conn, id: id).filter(\.$role == role).count().map { $0 > 0 }
     }
     
     ///Returns true if the entity is associated with *at least 1* role in
     ///roles.includedRoles and is **not** associated with *any* role in
     ///roles.excludedRoles. Throws an exception on Fluent errors.
     public func has<TRole>(roles:RolesGroup<TRole>, on conn:Database) -> EventLoopFuture<Bool> where TRole: RoleIdentifier {
+        guard let id = self.id else {
+            return conn.eventLoop.makeFailedFuture(NilException<IDValue>())
+        }
         //Fluent throws an exception when calling filter(_, in:) with an empty array, so we need
         //to handle the separate cases where there exist and don't exist elements.
         let included = roles.includedRoles.map() { $0 }
@@ -42,8 +51,8 @@ extension Authenticatable where Self: Model {
         }
         //Because Authenticatable does not necessarily need to be a class, the closure can't
         //capture `[weak self]`, so `innerQuery` is declared ahead of time and that is captured instead.
-        let innerQuery:QueryBuilder<Role<TRole, Self>> = self.rolesQuery(on: conn)
-        return self.rolesQuery(on: conn)
+        let innerQuery:QueryBuilder<Role<TRole, Self>> = self.rolesQuery(on: conn, id: id)
+        return self.rolesQuery(on: conn, id: id)
             .filter(\.$role ~~ included)
             .count()
             .flatMap() {
@@ -82,7 +91,7 @@ extension Authenticatable where Self: Model {
         guard let id = self.id else {
             return conn.eventLoop.makeFailedFuture(NilException<IDValue>())
         }
-        let query:QueryBuilder<Role<TRole, Self>> = self.rolesQuery(on: conn)
+        let query:QueryBuilder<Role<TRole, Self>> = self.rolesQuery(on: conn, id: id)
         return self.has(role: role, on: conn).flatMap() {
             guard $0 else {
                 return conn.eventLoop.makeFailedFuture(OperationException(error: .missing, message: "User with id \(id) does not have role \(role)."))
