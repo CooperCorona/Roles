@@ -14,8 +14,7 @@ import CoronaErrors
 ///for a given authenticatable and role entity.
 open class RolesAccessor<TRole, TAuth>: RolesAccessorProtocol where
     TRole: RoleIdentifier,
-    TAuth: Model & Authenticatable,
-    TAuth.IDValue: QueryableProperty {
+    TAuth: Model & Authenticatable {
 
     private let connectionPool:Database
 

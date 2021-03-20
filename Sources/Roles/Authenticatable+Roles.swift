@@ -10,7 +10,7 @@ import Fluent
 import Vapor
 import CoronaErrors
 
-extension Authenticatable where Self: Model, IDValue: QueryableProperty {
+extension Authenticatable where Self: Model {
 
     /// Returns a query for only the roles associated with this object.
     private func rolesQuery<TRole>(on conn:Database, id:IDValue) -> QueryBuilder<Role<TRole, Self>> where TRole: RoleIdentifier {
